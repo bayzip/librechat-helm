@@ -13,10 +13,10 @@ This Helm chart deploys LibreChat, an open-source chat application, on a Kuberne
 
 ### Add the Helm Repository
 ```bash
-git clone https://github.com/bayzip/librechat-helm.git
-cd Charts
-helm install librechat ./ -n librechat --create-namespace
+helm repo add librechat https://bayzip.github.io/librechat-helm/
+helm repo update
+helm install librechat librechat/librechat -n librechat --create-namespace
 
 # To install with custom values:
-helm install librechat ./ -f values.yaml  --create-namespace
+helm install librechat librechat/librechat -f values.yaml  --create-namespace
 ```
