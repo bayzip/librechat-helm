@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "librechat.fullname" . }}-librechat
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}
+    app: {{ include "librechat.fullname" . }}-librechat
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.librechat.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "librechat.selectorLabels" . | nindent 6 }}
+      app: {{ include "librechat.fullname" . }}-librechat
+  template:
+    metadata:
+      {{- with .Values.librechat.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "librechat.labels" . | nindent 8 }}
+        {{- with .Values.librechat.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        app: {{ include "librechat.fullname" . }}-librechat
+    spec:
+      {{- with .Values.librechat.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "librechat.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.librechat.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.librechat.securityContext | nindent 12 }}
+          image: "{{ .Values.librechat.image.repository }}:{{ .Values.librechat.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.librechat.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.librechat.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.librechat.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.librechat.readinessProbe | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "librechat.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "librechat.fullname" . }}-config
+          resources:
+            {{- toYaml .Values.librechat.resources | nindent 12 }}
+          {{- with .Values.librechat.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.librechat.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.librechat.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.librechat.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.librechat.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

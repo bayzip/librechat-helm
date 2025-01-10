@@ -1,0 +1,9 @@
+{{- if .Values.vectordb.persistentVolumeClaims }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "librechat.fullname" . }}-pgdata-pvc
+spec:
+  {{- toYaml .Values.vectordb.persistentVolumeClaims.pgdata | nindent 2 }}
+{{- end }}

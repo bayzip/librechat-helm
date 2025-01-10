@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "librechat.fullname" . }}-librechat
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}-librechat
+    app: {{ include "librechat.fullname" . }}-librechat
+spec:
+  type: {{ .Values.librechat.service.type }}
+  ports:
+    - port: {{ .Values.librechat.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "librechat.selectorLabels" . | nindent 4 }}
+    app: {{ include "librechat.fullname" . }}-librechat

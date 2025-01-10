@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "librechat.fullname" . }}-vectordb
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}
+    app: {{ include "librechat.fullname" . }}-vectordb
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.vectordb.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "librechat.selectorLabels" . | nindent 6 }}
+      app: {{ include "librechat.fullname" . }}-vectordb
+  template:
+    metadata:
+      {{- with .Values.vectordb.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "librechat.labels" . | nindent 8 }}
+        {{- with .Values.vectordb.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        app: {{ include "librechat.fullname" . }}-vectordb
+    spec:
+      {{- with .Values.vectordb.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "librechat.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.vectordb.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.vectordb.securityContext | nindent 12 }}
+          image: "{{ .Values.vectordb.image.repository }}:{{ .Values.vectordb.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.vectordb.image.pullPolicy }}
+          args:
+            - "-c"
+            - "listen_addresses=*"
+          # ports:
+          #   - name: http
+          #     containerPort: {{ .Values.vectordb.service.port }}
+          #     protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.vectordb.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.vectordb.readinessProbe | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "librechat.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "librechat.fullname" . }}-config
+          resources:
+            {{- toYaml .Values.vectordb.resources | nindent 12 }}
+          {{- with .Values.vectordb.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.vectordb.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.vectordb.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.vectordb.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.vectordb.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

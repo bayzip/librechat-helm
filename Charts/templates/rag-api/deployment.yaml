@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "librechat.fullname" . }}-ragapi
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}
+    app: {{ include "librechat.fullname" . }}-ragapi
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.ragapi.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "librechat.selectorLabels" . | nindent 6 }}
+      app: {{ include "librechat.fullname" . }}-ragapi
+  template:
+    metadata:
+      {{- with .Values.ragapi.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "librechat.labels" . | nindent 8 }}
+        {{- with .Values.ragapi.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        app: {{ include "librechat.fullname" . }}-ragapi
+    spec:
+      {{- with .Values.ragapi.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "librechat.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.ragapi.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.ragapi.securityContext | nindent 12 }}
+          image: "{{ .Values.ragapi.image.repository }}:{{ .Values.ragapi.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.ragapi.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.ragapi.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.ragapi.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.ragapi.readinessProbe | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "librechat.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "librechat.fullname" . }}-config
+          resources:
+            {{- toYaml .Values.ragapi.resources | nindent 12 }}
+          {{- with .Values.ragapi.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.ragapi.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ragapi.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ragapi.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ragapi.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

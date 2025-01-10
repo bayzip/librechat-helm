@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "librechat.fullname" . }}-meilisearch
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}
+    app: {{ include "librechat.fullname" . }}-meilisearch
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.meilisearch.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "librechat.selectorLabels" . | nindent 6 }}
+      app: {{ include "librechat.fullname" . }}-meilisearch
+  template:
+    metadata:
+      {{- with .Values.meilisearch.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "librechat.labels" . | nindent 8 }}
+        {{- with .Values.meilisearch.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        app: {{ include "librechat.fullname" . }}-meilisearch
+    spec:
+      {{- with .Values.meilisearch.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "librechat.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.meilisearch.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.meilisearch.securityContext | nindent 12 }}
+          image: "{{ .Values.meilisearch.image.repository }}:{{ .Values.meilisearch.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.meilisearch.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.meilisearch.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.meilisearch.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.meilisearch.readinessProbe | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "librechat.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "librechat.fullname" . }}-config
+          resources:
+            {{- toYaml .Values.meilisearch.resources | nindent 12 }}
+          {{- with .Values.meilisearch.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.meilisearch.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.meilisearch.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.meilisearch.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.meilisearch.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,9 @@
+{{- if .Values.meilisearch.persistentVolumeClaims }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "librechat.fullname" . }}-meilidata-pvc
+spec:
+  {{- toYaml .Values.meilisearch.persistentVolumeClaims.meilidata | nindent 2 }}
+{{- end }}

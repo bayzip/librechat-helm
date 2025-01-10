@@ -1,0 +1,436 @@
+# Default values for librechat.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+librechat:
+  # This is for setting Kubernetes Annotations to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ 
+  podAnnotations: {}
+  # This is for setting Kubernetes Labels to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  podLabels: {}
+  # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+  podSecurityContext: {}
+    # fsGroup: 2000
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+  image:
+    repository: ghcr.io/danny-avila/librechat-dev
+    # This sets the pull policy for images.
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  resources: {}
+    # limits:
+    #   cpu: 250m
+    #   memory: 1024Mi
+    # requests:
+    #   cpu: 10m
+    #   memory: 128Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 3080
+  # Additional volumeMounts on the output Deployment definition.
+  # livenessProbe: 
+    # httpGet:
+    #   path: /
+    #   port: http
+  # readinessProbe: {}
+    # httpGet:
+    #   path: /
+    #   port: http
+  # Additional volumes on the output Deployment definition.
+  volumeMounts: 
+    - name: images
+      mountPath: "/app/client/public/images"
+      # readOnly: true
+    # - name: logs
+    #   mountPath: "/app/api/logs"
+  volumes:
+    - name: images
+      persistentVolumeClaim:
+        claimName: librechat-images-pvc
+    # - name: logs
+    #   persistentVolumeClaim:
+    #     claimName: librechat-logs-pvc
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+  replicaCount: 2
+
+  # Create a new section in values.yaml for persistent volume claims
+  persistentVolumeClaims:
+    images:
+      accessModes:
+        - ReadWriteMany
+      storageClassName: "longhorn" # Adjust based on your cluster's storage class
+      resources:
+        requests:
+          storage: 10Gi
+    # logs:
+    #   accessModes:
+    #     - ReadWriteOnce
+    #   storageClassName: "longhorn" # Adjust based on your cluster's storage class
+    #   resources:
+    #     requests:
+    #       storage: 5Gi
+
+meilisearch:
+  # This is for setting Kubernetes Annotations to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ 
+  podAnnotations: {}
+  # This is for setting Kubernetes Labels to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  podLabels: {}
+  # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+  podSecurityContext: {}
+    # fsGroup: 2000
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+  image:
+    repository: getmeili/meilisearch
+    # This sets the pull policy for images.
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v1.7.3"
+  resources:
+    limits:
+      cpu: 250m
+      memory: 1024Mi
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 7700
+  # Additional volumeMounts on the output Deployment definition.
+  # livenessProbe: 
+    # httpGet:
+    #   path: /
+    #   port: http
+  # readinessProbe: {}
+    # httpGet:
+    #   path: /
+    #   port: http
+  # Additional volumes on the output Deployment definition.
+  volumeMounts: 
+    - name: meili-data
+      mountPath: "/meili_data"
+      # readOnly: true
+  volumes:
+    - name: meili-data
+      persistentVolumeClaim:
+        claimName: librechat-meilidata-pvc
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+  replicaCount: 1
+
+  # Create a new section in values.yaml for persistent volume claims
+  persistentVolumeClaims:
+    meilidata:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: "longhorn" # Adjust based on your cluster's storage class
+      resources:
+        requests:
+          storage: 5Gi
+
+vectordb:
+  # This is for setting Kubernetes Annotations to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ 
+  podAnnotations: {}
+  # This is for setting Kubernetes Labels to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  podLabels: {}
+  # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+  podSecurityContext: {}
+    # fsGroup: 2000
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+  image:
+    repository: ankane/pgvector
+    # This sets the pull policy for images.
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  resources: {}
+    # limits:
+    #   cpu: 250m
+    #   memory: 1024Mi
+    # requests:
+    #   cpu: 10m
+    #   memory: 128Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 5432
+  # Additional volumeMounts on the output Deployment definition.
+  # livenessProbe:
+  #   exec:
+  #     command:
+  #       - pg_isready
+  #       - -U
+  #       - postgres
+  #   initialDelaySeconds: 30
+  #   periodSeconds: 10
+  #   timeoutSeconds: 5
+  # readinessProbe:
+  #   exec:
+  #     command:
+  #       - pg_isready
+  #       - -U
+  #       - postgres
+  #   initialDelaySeconds: 5
+  #   periodSeconds: 10
+  #   timeoutSeconds: 5
+  # Additional volumes on the output Deployment definition.
+  volumeMounts: 
+    - name: pg-data
+      mountPath: "/var/lib/postgresql/data"
+      subPath: postgres
+      # readOnly: true
+  volumes:
+    - name: pg-data
+      persistentVolumeClaim:
+        claimName: librechat-pgdata-pvc
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+  replicaCount: 1
+
+  # Create a new section in values.yaml for persistent volume claims
+  persistentVolumeClaims:
+    pgdata:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: "longhorn" # Adjust based on your cluster's storage class
+      resources:
+        requests:
+          storage: 5Gi
+
+ragapi:
+  # This is for setting Kubernetes Annotations to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/ 
+  podAnnotations: {}
+  # This is for setting Kubernetes Labels to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  podLabels: {}
+  # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+  podSecurityContext: {}
+    # fsGroup: 2000
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+  image:
+    repository: ghcr.io/danny-avila/librechat-rag-api-dev-lite
+    # This sets the pull policy for images.
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  resources:
+    limits:
+      cpu: 250m
+      memory: 1024Mi
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+  service:
+    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+    port: 8000
+  # Additional volumeMounts on the output Deployment definition.
+  # livenessProbe: 
+    # httpGet:
+    #   path: /
+    #   port: http
+  # readinessProbe: 
+    # httpGet:
+    #   path: /
+    #   port: http
+  # Additional volumes on the output Deployment definition.
+  volumeMounts: []
+      # readOnly: true
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+  replicaCount: 1
+
+configMap:
+  # Non-sensitive environment variables
+  APP_TITLE: "LibreChat"
+  PORT: "3080"
+  HOST: "0.0.0.0"
+  MONGO_URI: "mongodb://librechat-mongodb:27017/librechat"
+  SEARCH: true
+  MEILI_HOST: "librechat-meilisearch:7700"
+  MEILI_HTTP_ADDR: "127.0.0.1:7700"
+  MEILI_NO_ANALYTICS: true
+  RAG_PORT: 8000
+  RAG_API_URL: http://librechat-ragapi:8000
+  DB_HOST: librechat-vectordb
+  POSTGRES_DB: vectordb
+  POSTGRES_USER: postgres
+  DOMAIN_CLIENT: http://localhost:3080
+  DOMAIN_SERVER: http://localhost:3080
+  NO_INDEX: true
+  CONSOLE_JSON: false
+  DEBUG_LOGGING: true
+  DEBUG_CONSOLE: false
+  DEBUG_PLUGINS: true
+  ALLOW_EMAIL_LOGIN: true
+  ALLOW_REGISTRATION: true
+  ALLOW_SOCIAL_LOGIN: false
+  ALLOW_SOCIAL_REGISTRATION: false
+  ALLOW_PASSWORD_RESET: false
+  # ALLOW_ACCOUNT_DELETION=true # note: enabled by default if omitted/commented out
+  ALLOW_UNVERIFIED_EMAIL_LOGIN: true
+  SESSION_EXPIRY: 1000 * 60 * 15
+  REFRESH_TOKEN_EXPIRY: (1000 * 60 * 60 * 24) * 7
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+secrets:
+  # Sensitive environment variables that should be stored in a secret
+  OPENAI_API_KEY: ""
+  ASSISTANTS_API_KEY: ""
+  ANTHROPIC_API_KEY: ""
+  POSTGRES_PASSWORD: "FRE5pE3idrOx5pRoFraw"
+  CREDS_KEY: "24e3e019fe22ae414f492ea70e736e7f449ce7d71767891473057caad2281f96"
+  CREDS_IV: "8a7c55ae9c4c298bc38bab108d02164e"
+  JWT_SECRET: "9cec171ed19e0b2ec8a9a6787d54b89c7695850ad91619ba7c532c0eed92fe9a"
+  JWT_REFRESH_SECRET: "d426032a92ce29e4e6fcb30bdc9d55a81acbf6c17c6659318a2f019fa9d638dc"
+  MEILI_MASTER_KEY: "5f1a418d58af39ddf0e8cb1a1d0f5aa5"
+  
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+#This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: true
+  className: "nginx-nl"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-nl"
+  hosts:
+    - host: chat.localhost
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+   - secretName: librechat-tls
+     hosts:
+       - chat.localhost
+
+#This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+
+
+
+
+

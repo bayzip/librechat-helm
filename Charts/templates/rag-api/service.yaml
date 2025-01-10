@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "librechat.fullname" . }}-ragapi
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}-ragapi
+    app: {{ include "librechat.fullname" . }}-ragapi
+spec:
+  type: {{ .Values.ragapi.service.type }}
+  ports:
+    - port: {{ .Values.ragapi.service.port }}
+      targetPort: {{ .Values.ragapi.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "librechat.selectorLabels" . | nindent 4 }}
+    app: {{ include "librechat.fullname" . }}-ragapi

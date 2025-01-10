@@ -1,0 +1,9 @@
+{{- if .Values.librechat.persistentVolumeClaims }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "librechat.fullname" . }}-images-pvc
+spec:
+  {{- toYaml .Values.librechat.persistentVolumeClaims.images | nindent 2 }}
+{{- end }}
