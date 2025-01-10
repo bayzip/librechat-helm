@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  librechat:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-01-10T09:10:19.39513865Z"
+    description: A Helm chart for Kubernetes
+    digest: 8531904270983e81f62d8147a84a9ec7b24f8b70e5bf4d0717e422805c9c9b5d
+    name: librechat
+    type: application
+    urls:
+    - https://bayzip.github.io/librechat-helm/librechat-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-01-10T09:10:19.393561467Z"

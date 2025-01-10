@@ -1,0 +1,29 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+apiVersion: v2
+appVersion: 1.16.0
+description: A Helm chart for Kubernetes
+name: librechat
+type: application
+version: 0.1.0
+
+...
+files:
+  librechat-0.1.0.tgz: sha256:8531904270983e81f62d8147a84a9ec7b24f8b70e5bf4d0717e422805c9c9b5d
+-----BEGIN PGP SIGNATURE-----
+
+wsFcBAEBCgAQBQJngOO5CRDoYNcV1Ir3XwAAZP8QAFahKBlYZfYCSbiSru+ofEPx
+QvPOXgL6nnhpGlGBT+g7bBv3WLVRcuUUkz+59BUcnTXao8ubafWpsa5F3gVth7bO
+U8Y9qRY3X3UC/dZOvZvz9Af1DXhNrP/IgWsEMmABNHCvhrP2J+rLNvVVFpnCrds/
+mN0WlAmpE4Zmq/S40p6zE410/U/nk8IhyML+Crj1ujm6MPWInBBxd5gpUgXru/Ym
+FeiLTJ0JyV1tFHzBOIziQNmF2JZU/sQGqSQv13y6X+1gmTeBb3jnUDobRbVb1xY7
+4samAATv8lyMLPB+QBXXpqjp/KhpPCunOCH2CDVeGy6yFi6aIirJhym8B5PPfDQB
+sP5195zHN308TgH32QDtB1ZvAAhp+I5/ZArl8EEOLxMDS0x/rCZEaKK2tpSL2wVi
++0ZuVP74kmF4eOgTYEDjA6abymhGQrStGmFqFcWvjhFjDC+SecKxEJAZ/bGLUGot
+MwIlWl9zxpXq+v3wtOkD9WblGq2ELFzsyIXaWydkZxu9jNME7kwtK4pVQFOdFMen
+r702f1dxdqwLelyPBLRuHimckCQVGXu+2S2aOPagpOZa+8riJ2hYYwm6DAVqkKTu
+yOR7Z22bEynZUzbVbZlwgudYYAzWlCuBhkI4F9MIEWGkusyhafdvGywpdAGJkSVj
+M0y7Zi28XHlmANkMk6A2
+=qwqN
+-----END PGP SIGNATURE-----
